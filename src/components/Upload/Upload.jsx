@@ -175,7 +175,7 @@ function FullScreenDialog(props) {
   const handleChange = name => event => {
     switch(name) {
       case 'title':
-        if(event.target.value.length <= 20)
+        if(event.target.value.length <= 40)
           setTitle(event.target.value)
         break
       case 'description':
@@ -186,7 +186,7 @@ function FullScreenDialog(props) {
         setTeacher(event)
         break
       case 'discipline':
-        setDiscipline(event.target.value)
+        setDiscipline(event)
         break
       default:
         return null
@@ -232,7 +232,7 @@ function FullScreenDialog(props) {
             <Typography variant="h6" color="inherit" className={classes.flex}>
               Upload files
             </Typography>
-            { title && description && tags.length > 0 && files.length > 0 && (
+            { title && description && tags.length > 0 && files.length > 0 && !loading && (
               <Tooltip title={"Salvar"}>
                 <IconButton aria-label="Delete" className={classes.pulse} color="inherit" onClick={processUpload}>
                   <SaveIcon fontSize="large" />
