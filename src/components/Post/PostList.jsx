@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Post from './Post';
 import Grid from '@material-ui/core/Grid';
-import api from '../../services/api';
 
 export default function PostList(props){
 	const { posts } = props

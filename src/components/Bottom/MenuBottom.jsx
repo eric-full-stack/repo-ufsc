@@ -45,7 +45,7 @@ const styles = theme => ({
 });
 
 function BottomAppBar(props) {
-  const { classes } = props;
+  const { classes, disciplines, classObj } = props;
   const [open, setOpen] = useState(false)
 
   const handleClickOpen = () => {
@@ -54,7 +54,7 @@ function BottomAppBar(props) {
 
   return (
     <React.Fragment>
-      <Upload open={open} handleOpen={handleClickOpen.bind(this)}/>
+      <Upload disciplinesData={disciplines} classObj={classObj} open={open} handleOpen={handleClickOpen.bind(this)}/>
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <div />

@@ -27,7 +27,7 @@ import api from '../../services/api';
 
 const styles = {
   appBar: {
-    position: 'relative',
+    position: 'fixed',
   },
   flex: {
     flex: 1,
@@ -37,7 +37,7 @@ const styles = {
     flexGrow: 1
   },
   marginTop: {
-    marginTop: 10
+    marginTop: 80
   },
   margins: {
     marginTop: 20,
@@ -90,7 +90,7 @@ function Transition(props) {
 }
 
 function FullScreenDialog(props) {
-  const { open: isOpen, classes, handleOpen } = props
+  const { open: isOpen, classes, handleOpen, disciplinesData, classObj } = props
   
   const [files, setUploadedFiles] = useState([])
   const [title, setTitle] = useState('')
@@ -98,7 +98,7 @@ function FullScreenDialog(props) {
   const [description, setDescription] = useState('')
   const [teacher, setTeacher] = useState('')
   const [teachers, setTeachers] = useState([])
-  const [discipline, setDiscipline] = useState('')
+  const [disciplineSelect, setDiscipline] = useState('')
   const [disciplines, setDisciplines] = useState([])
   const [tags, setTags] = useState([])
   
@@ -107,21 +107,25 @@ function FullScreenDialog(props) {
       const response = await api.get(`/teachers`)
       const data = await response.data
       let newData = data.map( teacher => {
-        return {value: teacher.name, label: teacher.name}
+        return {value: teacher.name, label: teacher.name, obj: teacher}
       })
       setTeachers(newData)
     }
-    async function fetchDisciplines(){
-      const response = await api.get(`/disciplines`)
-      const data = await response.data
-      let newData = data.map( discipline => {
-        return {value: discipline.title, label: discipline.title}
-      })
-      setDisciplines(newData)
-    }
+    
+    let newData = disciplinesData.map( discipline => {
+      return {value: discipline.title, label: discipline.title}
+    })
+    setDisciplines(newData)
+    
     fetchTeachers()
-    fetchDisciplines()
   }, [])
+
+  useEffect( () => {
+    let newData = disciplinesData.map( discipline => {
+      return {value: discipline.title, label: discipline.title, obj: discipline}
+    })
+    setDisciplines(newData)
+  }, [disciplinesData])
 
   const handleUpload = fileslist => {
     const uploadedFiles = fileslist.map(file => ({
@@ -144,8 +148,8 @@ function FullScreenDialog(props) {
 
     data.append('title', title)
     data.append('description', description)
-    data.append('teacher', teacher.value || null)
-    data.append('discipline', discipline.value || null)
+    data.append('teacher', JSON.stringify(teacher.obj) || null)
+    data.append('discipline', JSON.stringify(disciplineSelect.obj) || null)
 
     for (var i = 0; i < tags.length; i++) {
         data.append('tags[]', tags[i])
@@ -274,7 +278,7 @@ function FullScreenDialog(props) {
 
               <SelectInput name={'teacher'} handleChange={handleChange.bind(this)} label={'Teacher'} value={teacher} options={teachers} />
               
-              <SelectInput name={'discipline'} handleChange={handleChange.bind(this)} label={'Discipline'} value={discipline} options={disciplines} />
+              <SelectInput name={'discipline'} handleChange={handleChange.bind(this)} label={'Discipline'} value={disciplineSelect} options={disciplines} />
 
               <ChipInput
                 value={tags}
