@@ -13,7 +13,7 @@ function Semester(props){
 	const { classes, name, handleSemesterChange, id } = props;
 	return (
 		<Button fullWidth onClick={() => handleSemesterChange(id)} size="large" color="primary" variant="contained">
-	      	{`${name}º`}
+	      	{`${name}`}
 	     </Button>
 	)
 }

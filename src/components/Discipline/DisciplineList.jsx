@@ -2,42 +2,43 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import DraftsIcon from '@material-ui/icons/Drafts';
 
-const styles = {
+const styles = theme => ({
   root: {
     marginTop: 10,
-    flexGrow: 1
+    flexGrow: 1,
+    
   },
   card: {
-    
-    textAlign: 'center',
-    justifyContent: 'center',
-    padding: '5px'
+    backgroundColor: 'white',   
   },
-};
+});
 
 function DisciplineList(props) {
   const { classes, disciplines, handleDisciplineChange } = props; 
  
   return (
   	<Grid container className={classes.root} alignItems={'center'} spacing={16}  alignContent={'center'} direction={'row'} justify={'center'} >
+      <div className={classes.card}>
+      <List dense={false} component="nav">
   		{ disciplines.map(discipline => (
-		  	<Grid item xs={12} sm={3} md={3} lg={3} key={discipline._id}>
-        <CardActionArea onClick={() => handleDisciplineChange(discipline._id)}>
-		  		<Card color="primary" className={classes.card} raised>
-            
-              <Typography component="span" variant="overline" color="inherit">{discipline.title}</Typography>
-            
-          </Card>
-          </CardActionArea>
-		    </Grid>
+        <ListItem button key={discipline._id} onClick={() => handleDisciplineChange(discipline._id)}>
+          <ListItemIcon>
+            <DraftsIcon />
+          </ListItemIcon>
+          <ListItemText
+            primary={discipline.title}
+          />
+        </ListItem>
   		))}
+      </List>
+      </div>
     </Grid>
   );
 }

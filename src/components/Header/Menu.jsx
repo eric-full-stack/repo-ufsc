@@ -33,7 +33,7 @@ function MenuTop(props) {
           <Typography variant="h6" color="inherit" className={classes.grow}>
             RepoUFSC
           </Typography>
-          <Button color="inherit">Login</Button>
+          
         </Toolbar>
       </AppBar>
     </div>

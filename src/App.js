@@ -46,9 +46,9 @@ function App(props){
 		}
 	}
 
-	useEffect( async () => {
-		await getPosts()
-		await getClasses()
+	useEffect( () => {
+		 getPosts()
+		 getClasses()
 		setLoading(false)
 	}, [])
 
