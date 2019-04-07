@@ -8,8 +8,11 @@ import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
 import Description from '@material-ui/icons/Description';
 import SendIcon from '@material-ui/icons/Backup';
-import StarIcon from '@material-ui/icons/Star';
 import Upload from '../Upload/Upload';
+import MyPosts from '../User/MyPosts';
+import { toggleDialog } from '../../actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 const styles = theme => ({
   text: {
@@ -45,16 +48,25 @@ const styles = theme => ({
 });
 
 function BottomAppBar(props) {
-  const { classes, disciplines, classObj } = props;
+  const { classes, disciplines, classObj, discipline, user, toggleDialog } = props;
   const [open, setOpen] = useState(false)
+  const [openMyPosts, setOpenMyPosts] = useState(false)
 
   const handleClickOpen = () => {
-    setOpen(!open)
+    if(!user)
+      toggleDialog()
+    else
+      setOpen(!open)
+  }
+
+  const handleOpenMyPosts = () => {
+    setOpenMyPosts(!openMyPosts)
   }
 
   return (
     <React.Fragment>
-      <Upload disciplinesData={disciplines} classObj={classObj} open={open} handleOpen={handleClickOpen.bind(this)}/>
+      <MyPosts isOpen={openMyPosts} handleOpenMyPosts={handleOpenMyPosts}/>
+      <Upload disciplinesData={disciplines} discipline={discipline} classObj={classObj} open={open} handleOpen={handleClickOpen.bind(this)}/>
       <AppBar position="fixed" color="primary" className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
           <div />
@@ -62,16 +74,13 @@ function BottomAppBar(props) {
             <SendIcon />
           </Fab>
           <div>
-            <Tooltip title={'Meus arquivos'}>
-              <IconButton color="inherit">
-                <Description />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={'Meus favoritos'}>
-              <IconButton color="inherit">
-                <StarIcon />
-              </IconButton>
-            </Tooltip>
+            {user && (
+              <Tooltip title={'Meus arquivos'}>
+                <IconButton color="inherit" onClick={handleOpenMyPosts}>
+                  <Description />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
         </Toolbar>
       </AppBar>
@@ -83,4 +92,10 @@ BottomAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(BottomAppBar);
+const mapStateToProps = state => ({
+    user: state.user,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ toggleDialog }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(BottomAppBar));

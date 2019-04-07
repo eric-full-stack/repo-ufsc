@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Divider from '@material-ui/core/Divider';
 import AppBar from '@material-ui/core/AppBar';
@@ -24,6 +23,7 @@ import { uniqueId } from 'lodash';
 import filesize from 'filesize';
 import SelectInput from '../Select/SelectInput';
 import api from '../../services/api';
+import { connect } from 'react-redux';
 
 const styles = {
   appBar: {
@@ -43,7 +43,7 @@ const styles = {
     marginTop: 20,
     marginBottom: 20,
   },
-  '@keyframes jump': {
+  '@keyframes2 jump': {
     '0%': {transform:' translate3d(0,0,0) scale3d(1,1,1)'},
     '40%': {transform: 'translate3d(0,30%,0) scale3d(.7,1.5,1)'},
     '100%': {transform: 'translate3d(0,100%,0) scale3d(1.5,.7,1)'},
@@ -68,7 +68,7 @@ const styles = {
       '-webkit-box-shadow': '0 0 0 0 rgba(204,169,44, 0)',
     }
   },
-  '@keyframes pulse': {
+  '@keyframes3 pulse': {
     '0%': {
       '-moz-box-shadow': '0 0 0 0 rgba(204,169,44, 0.4)',
       'box-shadow': '0 0 0 0 rgba(204,169,44, 0.4)',
@@ -90,7 +90,7 @@ function Transition(props) {
 }
 
 function FullScreenDialog(props) {
-  const { open: isOpen, classes, handleOpen, disciplinesData, classObj } = props
+  const { open: isOpen, classes, handleOpen, disciplinesData, discipline, user } = props
   
   const [files, setUploadedFiles] = useState([])
   const [title, setTitle] = useState('')
@@ -127,6 +127,10 @@ function FullScreenDialog(props) {
     setDisciplines(newData)
   }, [disciplinesData])
 
+  useEffect( () => {
+    setDiscipline({value: discipline.title, label: discipline.title, obj: discipline})
+  }, [discipline])
+
   const handleUpload = fileslist => {
     const uploadedFiles = fileslist.map(file => ({
       file,
@@ -142,7 +146,7 @@ function FullScreenDialog(props) {
   
   };
 
-  function processUpload(){
+  async function processUpload(){
     setLoading(true)
     const data = new FormData() 
 
@@ -150,23 +154,24 @@ function FullScreenDialog(props) {
     data.append('description', description)
     data.append('teacher', JSON.stringify(teacher.obj) || null)
     data.append('discipline', JSON.stringify(disciplineSelect.obj) || null)
+    data.append('user', JSON.stringify(user.user) || null)
 
-    for (var i = 0; i < tags.length; i++) {
+    for (let i = 0; i < tags.length; i++) {
         data.append('tags[]', tags[i])
     }
 
-    for (var i = 0; i < files.length; i++) {
+    for (let i = 0; i < files.length; i++) {
       data.append('files[]', files[i].file)
     }
 
-    api.post('posts', data).then( (res) => {
+    await api.post('posts', data, { headers: { Authorization: `Bearer ${user.token}` }}).then( (res) => {
       setUploadedFiles([])
       setTitle('')
       setDescription('')
       setTags([])
-      
-      setTimeout(() => {handleOpen(false);setLoading(false)}, 1000)
     })
+    handleOpen(false)
+    setLoading(false)
 
   }
 
@@ -326,4 +331,9 @@ FullScreenDialog.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(FullScreenDialog);
+const mapStateToProps = state => ({
+    user: state.user,
+});
+
+
+export default connect(mapStateToProps, null)(withStyles(styles)(FullScreenDialog));

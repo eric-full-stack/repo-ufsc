@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
@@ -18,6 +18,9 @@ import Grid from '@material-ui/core/Grid';
 import downloadfunction from './downloadfunction.js';
 import api from '../../services/api';
 import Lightbox from 'react-images';
+import { toggleDialog } from '../../actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 const styles = theme => ({
 	grow: {
@@ -39,25 +42,38 @@ const styles = theme => ({
 });
 
 function Post(props) {
-	const { classes, data: post } = props;
+	const { classes, data: post, user, toggleDialog } = props;
 
 	const [like, setLike] = useState(false)
 	const [likes, setLikes] = useState(post.likes)
 	const [lightboxIsOpen, setLightboxOpen] = useState(false)
 	const [currentFile, setCurrentFile] = useState(0)
 
+	useEffect(() => {
+		if(user)
+			setLike( user.user.likes && user.user.likes.includes(post.id))
+	}, [user])
+
 	async function handleLike(id){
-		if(like){
-			const response = await api.post(`/posts/${id}/unlike`)
-			let { likes } = response.data
-			setLikes(likes)
+		try{
+			if(user){
+				if(like){
+					const response = await api.post(`/posts/${id}/unlike`, {}, { headers: { Authorization: `Bearer ${user.token}` } })
+					let { likes } = response.data
+					setLikes(likes)
+				}
+				else{
+					const response = await api.post(`/posts/${id}/like`, {}, { headers: { Authorization: `Bearer ${user.token}` } })
+					let { likes } = response.data
+					setLikes(likes)
+				}
+				setLike(!like)
+			}else{
+				toggleDialog()
+			}
+		}catch(err){
+			console.log(err)
 		}
-		else{
-			const response = await api.post(`/posts/${id}/like`)
-			let { likes } = response.data
-			setLikes(likes)
-		}
-		setLike(!like)
 		
 	}
 
@@ -70,7 +86,6 @@ function Post(props) {
 	}
 
 	function handleDetail(id){
-		//const response = await fetch(`http://localhost:3333/posts/${id}/like`)
 		setLightboxOpen(!lightboxIsOpen)
 	}
 
@@ -140,4 +155,10 @@ Post.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Post);
+const mapStateToProps = state => ({
+    user: state.user,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ toggleDialog }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Post));

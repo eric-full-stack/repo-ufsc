@@ -7,10 +7,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
-import LinkIcon from '@material-ui/icons/Link';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CheckIcon from '@material-ui/icons/Check';
-import ErrorIcon from '@material-ui/icons/ErrorOutline';
 
 const styles = theme => ({
 	container: {

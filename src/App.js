@@ -13,7 +13,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import api from './services/api';
-import Pusher from 'pusher-js';
 
 const styles = theme => ({
   chip: {
@@ -26,7 +25,6 @@ const styles = theme => ({
 function App(props){
 
 	const [search, setSearch] = useState('')
-	const [enter, setEnter] = useState(false)
 	const [loading, setLoading] = useState(true)
 	const [posts, setPosts] = useState([])
 	const [classesList, setClasses] = useState([])
@@ -53,7 +51,6 @@ function App(props){
 	}, [])
 
 	async function getClasses(){
-		var data = ''
 		var response = null;
 		if(search){
 			response = await api.get(`/classes`, {
@@ -61,19 +58,18 @@ function App(props){
 			      search
 			    }
 			})
-			data = await response.data
+			const data = await response.data
 			setClasses(data)
 		}
 		else{
 			response = await api.get(`/classes`)
-			data = await response.data
+			const data = await response.data
 			setClasses(data)
 		}
 	}
 
 	async function getDisciplines(smt){
 		setLoading(true)
-		var data = ''
 		var response = null;
 		response = await api.get(`/disciplines/semester/${smt._id}`)
 		setDisciplines(response.data)
@@ -91,11 +87,13 @@ function App(props){
 			    }
 			})
 			data = await response.data
+			
 			setPosts(data)
 		}
 		else if(dscId){
 			response = await api.get(`/posts/getByDiscipline/${dscId}`)
 			data = await response.data
+			
 			setPosts(data)
 		}
 		setLoading(false)
@@ -113,6 +111,7 @@ function App(props){
 			setDiscipline('')
 			setDisciplines([])
 			setPosts([])
+			setSearch('')
 		}
 	}
 
@@ -126,6 +125,7 @@ function App(props){
 			setSemester('')
 			setDisciplines([])
 			setDiscipline('')
+			setSearch('')
 			setPosts([])
 		}
 	}
@@ -138,6 +138,7 @@ function App(props){
 		}else{
 			setDiscipline('')
 			setPosts([])
+			setSearch('')
 		}
 	}
 	
@@ -171,7 +172,7 @@ function App(props){
 				{loading && <Grid container justify="center" alignItems="center"><CircularProgress /></Grid> }
 				{!loading && ( 
 					<>
-					{!selectedClass && (
+					{!selectedClass && !search && (
 						<ClassesList classesList={classesList} handleClassChange={handleClassChange.bind(this)}/>
 					)}
 					{selectedClass && !semester && !search && (
@@ -186,15 +187,16 @@ function App(props){
 						<DisciplineList disciplines={disciplines} handleDisciplineChange={handleDisciplineChange.bind(this)} />
 						</>
 					)}
-					{selectedClass && semester && discipline && (
+					{selectedClass && semester && discipline && !search && (
 						<PostList posts={posts}/>
 					)}
+					{search && <PostList posts={posts}/>}
 				
 				</>
 			)}
 			</Grid>
 			{selectedClass && semester && discipline && (
-				<MenuBottom disciplines={disciplines} classObj={selectedClass}/>
+				<MenuBottom discipline={discipline} disciplines={disciplines} classObj={selectedClass}/>
 			)}
 		</Grid>
 	)
