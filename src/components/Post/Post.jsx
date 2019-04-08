@@ -21,6 +21,7 @@ import Lightbox from 'react-images';
 import { toggleDialog } from '../../actions';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { CircularProgress } from '@material-ui/core';
 
 const styles = theme => ({
 	grow: {
@@ -45,6 +46,7 @@ function Post(props) {
 	const { classes, data: post, user, toggleDialog } = props;
 
 	const [like, setLike] = useState(false)
+	const [downloading, setDownloading] = useState(false)
 	const [likes, setLikes] = useState(post.likes)
 	const [lightboxIsOpen, setLightboxOpen] = useState(false)
 	const [currentFile, setCurrentFile] = useState(0)
@@ -83,10 +85,12 @@ function Post(props) {
 	}
 
 	async function handleDownload(id){
+		setDownloading(true)
 		await fetch(`${process.env.REACT_APP_API_URL}/posts/${id}/download`).then(resp => {
 			return resp.blob()
-		}).then(blob => {
-			downloadfunction(blob,"download.zip",'application/zip')
+		}).then(async blob => {
+			await downloadfunction(blob,"download.zip",'application/zip')
+			setDownloading(false)
 		})
 	}
 
@@ -137,7 +141,8 @@ function Post(props) {
 				<CardActions>
 					<Tooltip title={'Download'}>
 					    <IconButton aria-label="Download files" onClick={() => handleDownload(post._id)} >
-					      <CloudDownload /> 
+								{!downloading && <CloudDownload /> }
+								{downloading && <CircularProgress size={20} /> }
 					    </IconButton>
 					</Tooltip>
 					{!zip && (
