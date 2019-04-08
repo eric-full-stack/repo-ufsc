@@ -103,11 +103,16 @@ function Post(props) {
 		let page = currentFile-1
 		setCurrentFile(page)
 	}
-
+	var zip = false
 	return (
 		<Grid item xs={12} sm={6} md={4} lg={3}>
 			<Lightbox
-			  images={post.files.map(file => { return {src: file.url} })}
+			  images={post.files.map(file => { 
+					if(file.type.includes("image"))
+						return {src: file.url}
+					if(file.type.includes("application") || file.type.includes("zip"))
+						zip = true
+				})}
 			  isOpen={lightboxIsOpen}
 			  onClose={handleDetail}
 			  currentImage={currentFile}
@@ -135,12 +140,13 @@ function Post(props) {
 					      <CloudDownload /> 
 					    </IconButton>
 					</Tooltip>
-					
-					<Tooltip title={'Details'}>
-					    <IconButton aria-label="Details" onClick={handleDetail}>
-					    	<Description /> 
-					    </IconButton>
-					</Tooltip>
+					{!zip && (
+						<Tooltip title={'Details'}>
+								<IconButton aria-label="Details" onClick={handleDetail}>
+									<Description /> 
+								</IconButton>
+						</Tooltip>
+					)}
 					
 					<div className={classes.grow}/>
 					<Tooltip title={'Like'}>

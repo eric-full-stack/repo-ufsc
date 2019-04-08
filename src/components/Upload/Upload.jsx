@@ -301,7 +301,7 @@ function FullScreenDialog(props) {
                 variant="outlined"
               />
               <Divider className={classes.margins} />
-              <Dropzone accept="application/pdf,image/*" onDropAccepted={handleUpload}>
+              <Dropzone accept="application/x-rar-compressed, application/octet-stream, application/zip, application/x-zip-compressed, multipart/x-zip ,application/pdf, image/*" onDropAccepted={handleUpload}>
                 { ({ getRootProps, getInputProps, isDragActive, isDragReject}) => (
                   <DropContainer
                     {...getRootProps()}
