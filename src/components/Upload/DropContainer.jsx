@@ -17,18 +17,10 @@ const styles = theme => ({
 });
 
 function DropContainer(props) {
-	const { classes, children, isDragActive, isDragReject } = props;
+	const { classes, children, isDragActive, isDragReject, ...other } = props;
 	return (
 		<div className={`${classes.container} ${isDragReject && classes.dragReject} ${isDragActive && classes.dragActive} `} 
-			onBlur={props.onBlur}
-			onClick={props.onClick}
-			onDragEnter={props.onDragEnter}
-			onDragOver={props.onDragOver}
-			onDrop={props.onDrop}
-			onFocus={props.onFocus}
-			onKeyDown={props.onKeyDown}
-			ref={props.ref}
-			tabIndex={props.tabIndex}
+			{...other}
 		>
 			{children}
 		</div> 

@@ -178,6 +178,7 @@ function FullScreenDialog(props) {
     setDone(true)
     setLoading(false)
     setTimeout(()=> handleOpen(false), 1000)
+    setDone(false)
   }
 
   const handleDeleteFile = file => {
