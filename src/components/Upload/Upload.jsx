@@ -177,8 +177,10 @@ function FullScreenDialog(props) {
     await getPosts(disciplineSelect.obj._id)
     setDone(true)
     setLoading(false)
-    setTimeout(()=> handleOpen(false), 1000)
-    setDone(false)
+    setTimeout(()=> {
+      setDone(false)
+      handleOpen(false)
+    }, 1000)
   }
 
   const handleDeleteFile = file => {
