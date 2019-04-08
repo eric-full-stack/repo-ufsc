@@ -58,3 +58,27 @@ export const deletePost = (post, token) => async dispatch => {
 	}
 }
 
+export const getPosts = (dscId, search = null) => async dispatch => {
+	var data = ''
+	var response = null;
+	if(search){
+		response = await api.get(`/posts`, {
+		    params: {
+		      search
+		    }
+		})
+		data = await response.data
+		dispatch({
+			type: 'POST_FETCHED',
+			posts: data
+		})
+	}
+	else if(dscId){
+		response = await api.get(`/posts/getByDiscipline/${dscId}`)
+		data = await response.data
+		dispatch({
+			type: 'POST_FETCHED',
+			posts: data
+		})
+	}
+}

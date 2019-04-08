@@ -12,6 +12,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/CheckCircle';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import SaveIcon from '@material-ui/icons/Save';
 import TextField from '@material-ui/core/TextField';
 import ChipInput from 'material-ui-chip-input'
@@ -23,7 +24,9 @@ import { uniqueId } from 'lodash';
 import filesize from 'filesize';
 import SelectInput from '../Select/SelectInput';
 import api from '../../services/api';
+import { getPosts } from '../../actions';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 const styles = {
   appBar: {
@@ -90,11 +93,12 @@ function Transition(props) {
 }
 
 function FullScreenDialog(props) {
-  const { open: isOpen, classes, handleOpen, disciplinesData, discipline, user } = props
+  const { open: isOpen, classes, handleOpen, disciplinesData, discipline, user, getPosts } = props
   
   const [files, setUploadedFiles] = useState([])
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
+  const [done, setDone] = useState(false)
   const [description, setDescription] = useState('')
   const [teacher, setTeacher] = useState('')
   const [teachers, setTeachers] = useState([])
@@ -170,9 +174,10 @@ function FullScreenDialog(props) {
       setDescription('')
       setTags([])
     })
-    handleOpen(false)
+    await getPosts(disciplineSelect.obj._id)
+    setDone(true)
     setLoading(false)
-
+    setTimeout(()=> handleOpen(false), 1000)
   }
 
   const handleDeleteFile = file => {
@@ -251,7 +256,7 @@ function FullScreenDialog(props) {
             
           </Toolbar>
         </AppBar>
-        { !loading && (
+        { !loading && !done && (
           <Grid container  alignItems={'center'} alignContent={'center'} className={classes.marginTop} >
             <Grid item lg={3} />
             <Grid item xs={12} lg={6} >
@@ -318,6 +323,13 @@ function FullScreenDialog(props) {
         {loading && (
           <Grid container className={classes.root} alignItems={'center'}  alignContent={'center'} direction={'row'} justify={'center'} >
             
+             <CircularProgress size={200} style={{marginRight: '10px'}}/> 
+              
+          </Grid>
+        )}
+        {done && (
+          <Grid container className={classes.root} alignItems={'center'}  alignContent={'center'} direction={'row'} justify={'center'} >
+            
             <CheckIcon style={{ fontSize: 200 }} color="primary" className={classes.jump}/>
               
           </Grid>
@@ -335,5 +347,6 @@ const mapStateToProps = state => ({
     user: state.user,
 });
 
+const mapDispatchToProps = dispatch => bindActionCreators({ getPosts }, dispatch);
 
-export default connect(mapStateToProps, null)(withStyles(styles)(FullScreenDialog));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FullScreenDialog));

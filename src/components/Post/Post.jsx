@@ -54,6 +54,11 @@ function Post(props) {
 			setLike( user.user.likes && user.user.likes.includes(post.id))
 	}, [user])
 
+	useEffect(() => {
+		if(user)
+			setLike( user.user.likes && user.user.likes.includes(post.id))
+	}, [])
+
 	async function handleLike(id){
 		try{
 			if(user){

@@ -13,6 +13,9 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Chip from '@material-ui/core/Chip';
 import api from './services/api';
+import { getPosts } from './actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 const styles = theme => ({
   chip: {
@@ -34,21 +37,28 @@ function App(props){
 	const [discipline, setDiscipline] = useState('')
 	const [selectedClass, setClass] = useState('')
 
+	const { classes, getPosts, postsData } = props 
+
 	const handleChange = e => {
 		setSearch(e.target.value)
 	}
 
-	const handleSubmit = e => {
+	const handleSubmit = async e => {
 		if (e.key === 'Enter' ) {
-			getPosts()
+			setLoading(true)
+			await getPosts(null, search)
+			setLoading(false)
 		}
 	}
 
 	useEffect( () => {
-		 getPosts()
-		 getClasses()
+		getClasses()
 		setLoading(false)
 	}, [])
+
+	useEffect( () => {
+		setPosts(postsData)
+	}, [postsData])
 
 	async function getClasses(){
 		var response = null;
@@ -73,29 +83,6 @@ function App(props){
 		var response = null;
 		response = await api.get(`/disciplines/semester/${smt._id}`)
 		setDisciplines(response.data)
-		setLoading(false)
-	}
-
-	async function getPosts(dscId){
-		setLoading(true)
-		var data = ''
-		var response = null;
-		if(search){
-			response = await api.get(`/posts`, {
-			    params: {
-			      search
-			    }
-			})
-			data = await response.data
-			
-			setPosts(data)
-		}
-		else if(dscId){
-			response = await api.get(`/posts/getByDiscipline/${dscId}`)
-			data = await response.data
-			
-			setPosts(data)
-		}
 		setLoading(false)
 	}
 
@@ -130,11 +117,14 @@ function App(props){
 		}
 	}
 
-	const handleDisciplineChange = (id) => {
+	const handleDisciplineChange = async id => {
 		let Obj = disciplines.filter(obj => { return obj._id === id })[0]
 		if(Obj){
 			setDiscipline(Obj || '')
-			getPosts(Obj._id)
+			setLoading(true)
+			await getPosts(Obj._id)
+			setLoading(false)
+
 		}else{
 			setDiscipline('')
 			setPosts([])
@@ -142,8 +132,6 @@ function App(props){
 		}
 	}
 	
-	const { classes } = props 
-
 	return (
 		<Grid container spacing={16}>
 			<MenuTop/>
@@ -206,4 +194,10 @@ App.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(App);
+const mapStateToProps = state => ({
+    postsData: state.posts.posts,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ getPosts }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(App));
