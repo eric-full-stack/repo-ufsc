@@ -17,6 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import downloadfunction from './downloadfunction.js';
 import api from '../../services/api';
+import socket from '../../services/io';
 import Lightbox from 'react-images';
 import { toggleDialog } from '../../actions';
 import { connect } from 'react-redux';
@@ -44,19 +45,24 @@ const styles = theme => ({
 
 function Post(props) {
 	const { classes, data: post, user, toggleDialog } = props;
-
 	const [like, setLike] = useState(false)
 	const [downloading, setDownloading] = useState(false)
 	const [likes, setLikes] = useState(post.likes)
 	const [lightboxIsOpen, setLightboxOpen] = useState(false)
 	const [currentFile, setCurrentFile] = useState(0)
-
+	
 	useEffect(() => {
 		if(user)
-			setLike( user.user.likes && user.user.likes.includes(post.id))
+		setLike( user.user.likes && user.user.likes.includes(post.id))
 	}, [user])
-
+	
 	useEffect(() => {
+		socket.emit('connectPost', post.id)
+		socket.on('likes', data => {
+			if(data.post == post.id){
+				setLikes(data.likes)
+			}
+		})
 		if(user)
 			setLike( user.user.likes && user.user.likes.includes(post.id))
 	}, [])

@@ -7,10 +7,10 @@ export const login = (email, password) => async dispatch => {
     }).then((res) => {
       	const { user, token } = res.data
 	    dispatch({
-			type: 'SIGNIN',
-			user,
-			token
-		})
+				type: 'SIGNIN',
+				user,
+				token
+			})
     }).catch(err => {
       alert('Invalid password or email')
     })
@@ -26,10 +26,10 @@ export const register = (name, email, password) => async dispatch => {
     }).then((res) => {
       	const { user, token } = res.data
        	dispatch({
-			type: 'SIGNIN',
-			user,
-			token
-		})
+				type: 'SIGNIN',
+				user,
+				token
+			})
     }).catch(err => {
       alert('Invalid data')
     })
