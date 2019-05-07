@@ -8,7 +8,7 @@ export default function PostList(props){
 
 	useEffect(() => {
 		return function cleanup() {
-			posts.map(post => {
+			posts && posts.map(post => {
 				socket.emit('disconnectPost', post.id)
 			})
 		}
@@ -16,7 +16,7 @@ export default function PostList(props){
 
 	return (
 		<Grid container spacing={16} style={{marginTop:30, marginBottom: 80}}>
-			{posts.map(post => (
+			{posts && posts.map(post => (
 				<Post key={post._id} data={post} />
 			))}
 		</Grid>
